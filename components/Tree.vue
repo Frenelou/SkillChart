@@ -1,102 +1,207 @@
 <template>
-    <svg></svg>
+  <div>
+    <svg style="width:100%;height:100vh;">
+      <g />
+    </svg>
+  </div>
 </template>
 	
 <script>
 import * as d3 from "d3";
 export default {
-    data() {
-        return {
-            skills: [
-                { id: "tech", label: 'Tech Tree' },
-                { parentId: "tech", id: "languages", label: 'Languages', },
-                {
-                    parentId: "languages",
-                    id: "python",
-                    label: 'Python',
-                    iconHref: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Python-logo-notext.svg/768px-Python-logo-notext.svg.png',
-                    skillLevel: 90,
-                    descriptions: ['Mainly worked with webserver backend frameworks with it.', 'Used in some simple machine learning applications and projects such as Gestice League and Project 21.']
-                },
-                {
-                    parentId: "languages",
-                    id: "javascript",
-                    label: 'JavaScript',
-                    iconHref: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Unofficial_JavaScript_logo_2.svg/1200px-Unofficial_JavaScript_logo_2.svg.png',
-                    skillLevel: 90,
-                    descriptions: ['Mainly worked with webserver backend frameworks with it.', 'Used in some simple machine learning applications and projects such as Gestice League and Project 21.']
-                },
-                {
-                    parentId: "languages",
-                    id: "java",
-                    label: 'Java',
-                    iconHref: 'https://upload.wikimedia.org/wikipedia/en/3/30/Java_programming_language_logo.svg',
-                    skillLevel: 0,
-                    descriptions: ['Mainly worked with webserver backend frameworks with it.', 'Used in some simple machine learning applications and projects such as Gestice League and Project 21.']
-                }
-            ],
-            skillTree: null,
-            movies: [{
-                "Title": "Adaptation",
-                "Distributor": "Sony Pictures",
-                "Genre": "Comedy",
-                "Worldwide_Gross": 22498520,
-                "Rating": 91
-            },
-            {
-                "Title": "Air Bud",
-                "Distributor": "Walt Disney Pictures",
-                "Genre": "Comedy",
-                "Worldwide_Gross": 27555061,
-                "Rating": 45
-            },
-            {
-                "Title": "Air Force One",
-                "Distributor": "Sony Pictures",
-                "Genre": "Action",
-                "Worldwide_Gross": 315268353,
-                "Rating": 78
-            }]
-        }
+  data() {
+    return {
+      skillTree: null,
+      skills: [
+        { id: "skills", label: 'Skill Tree' },
+        { parentId: "skills", id: "languages", label: 'Languages', },
+        { parentId: "skills", id: "office", label: "Office" },
+        {
+          parentId: "languages",
+          id: "python",
+          label: 'Python',
+          skillLevel: 90,
+          descriptions: ['Mainly worked with webserver backend frameworks with it.', 'Used in some simple machine learning applications and projects such as Gestice League and Project 21.']
+        },
+        {
+          parentId: "languages",
+          id: "javascript",
+          label: 'JavaScript',
+          skillLevel: 90,
+          descriptions: ['Mainly worked with webserver backend frameworks with it.', 'Used in some simple machine learning applications and projects such as Gestice League and Project 21.']
+        },
+        {
+          parentId: "javascript",
+          id: "vue",
+          label: 'Vue',
+          skillLevel: 90,
+          descriptions: ['Mainly worked with webserver backend frameworks with it.', 'Used in some simple machine learning applications and projects such as Gestice League and Project 21.']
+        },
+        {
+          parentId: "javascript",
+          id: "react",
+          label: 'React',
+          skillLevel: 10,
+          descriptions: ['Mainly worked with webserver backend frameworks with it.', 'Used in some simple machine learning applications and projects such as Gestice League and Project 21.']
+        },
+        {
+          parentId: "javascript",
+          id: "d3.js",
+          label: 'D3.js',
+          skillLevel: 90,
+          descriptions: ['Mainly worked with webserver backend frameworks with it.', 'Used in some simple machine learning applications and projects such as Gestice League and Project 21.']
+        },
+        {
+          parentId: "python",
+          id: "django",
+          label: 'Django',
+          skillLevel: 90,
+          descriptions: ['Mainly worked with webserver backend frameworks with it.', 'Used in some simple machine learning applications and projects such as Gestice League and Project 21.']
+        },
+        {
+          parentId: "python",
+          id: "flask",
+          label: 'Flask',
+          skillLevel: 90,
+          descriptions: ['Mainly worked with webserver backend frameworks with it.', 'Used in some simple machine learning applications and projects such as Gestice League and Project 21.']
+        },
+        {
+          parentId: "office",
+
+          id: "excel",
+          label: 'Excel',
+          skillLevel: 90,
+          descriptions: ['Mainly worked with webserver backend frameworks with it.', 'Used in some simple machine learning applications and projects such as Gestice League and Project 21.']
+        },
+        {
+          parentId: "office",
+          id: "word",
+          label: 'Word',
+          skillLevel: 90,
+          descriptions: ['Mainly worked with webserver backend frameworks with it.', 'Used in some simple machine learning applications and projects such as Gestice League and Project 21.']
+        },
+        {
+          parentId: "office",
+          id: "powerpoint",
+          label: 'Powerpoint',
+          skillLevel: 90,
+          descriptions: ['Mainly worked with webserver backend frameworks with it.', 'Used in some simple machine learning applications and projects such as Gestice League and Project 21.']
+        },
+
+      ],
+
+      groups: null
+    }
+  },
+  mounted() {
+    this.skillTree = d3.select('svg');
+    let root = d3.hierarchy(this.makeGroups(this.skills));
+
+    var treeLayout = d3.tree();
+    treeLayout.size([1000, 1000]);
+    treeLayout(root);
+
+    this.drawLinks(root.links());
+    this.drawNodes(root.descendants());
+
+  },
+  methods: {
+    makeGroups(data) {
+      return d3.stratify()
+        .id(function (d) { return d.id; })
+        .parentId(function (d) { return d.parentId; })
+        (data);
     },
-    mounted() {
-        let hierarchy = d3.stratify()(this.skills);
-        const treeLayout = d3.tree().size([
-            1280,
-            500,
-        ]);
-        hierarchy = treeLayout(hierarchy);
-        this.svg = d3
-            .select("svg")
-            .attr("width", "100%")
-            .attr("height", 500)
-            .attr("style", "border: 1px solid black")
-            .attr("cursor", "grab")
-            .attr("position", "relative");
-        this.skillTree = this.svg.append("g");
+    drawNodes(nodes) {
+      console.log("drawNodes", nodes);
+      const getIcon = this.getIcon;
+      const rectWidth = 120;
 
-        const links = hierarchy.links();
-        const nodes = hierarchy.descendants();
+      const node = this.skillTree.selectAll('g.node')
+        .data(nodes)
+        .enter()
+        .append('g')
+        .classed('node', true)
+        .attr('transform', function (d) {
+          return 'translate(' + d.x + ',' + d.y + ')';
+        });
 
-        console.log(nodes);
-        // draw a circle 
-        this.skillTree
-            .select("circle")
-            .data(nodes)
-            .enter()
-            .append('circle')
-            .attr('cx', '50%')
-            .attr('cy', '50%')
-            .attr('r', 20)
-            .style('fill', 'green');
+      // add html div to each node
+      node.append('foreignObject')
+        .attr('width', rectWidth)
+        .attr('height', rectWidth)
+        .attr('x', function (d, i) {
+          return -rectWidth / 2 + 10;
+        })
+        .append('xhtml:div')
+        .html(function (d) {
+          const { skillLevel, label } = d.data.data;
+          const img = getIcon(label)
+          return `
+            <div class="skill">
+              <div class="skill-content">
+                <label>
+                  ${label}
+                </label>
+                ${skillLevel ? `<img src="${img}" alt="${label}">` : ''}
+              </div>
+            </div>
+          `;
+        });
 
     },
-    plugins: [
-        { src: '~node_modules/d3/dist/d3.js', ssr: false }
-    ]
+    drawLinks(links) {
+      console.log("drawLinks", links);
+      this.skillTree.selectAll('line.link')
+        .data(links)
+        .enter()
+        .append('line')
+        .classed('link', true)
+        .attr('x1', function (d) { return d.source.x; })
+        .attr('y1', function (d) { return d.source.y; })
+        .attr('x2', function (d) { return d.target.x; })
+        .attr('y2', function (d) { return d.target.y; })
+        .attr('stroke', 'black')
+        .attr('stroke-width', 1);
+    },
+    getIcon(label) {
+      const src = `icons/${label}.png`;
+      var http = new XMLHttpRequest();
+
+      http.open('HEAD', src, false);
+      http.send();
+
+      return http.status != 404 ? src : 'icons/default.png';
+    },
+    sumWorldwideGross(group) {
+      return d3.sum(group, function (d) {
+        return d.Worldwide_Gross;
+      });
+    }
+  },
+  plugins: [
+    { src: '~node_modules/d3/dist/d3.js', ssr: false }
+  ]
 }
 </script>
 	
-<style scoped>
+<style lang="scss">
+.skill {
+  padding: 0 10px;
+  font-size: 14px;
 
+  &-content {
+    border: 2px solid #000;
+    border-radius: 5px;
+    text-align: center;
+    background-color: #fff;
+    padding: 0.5em;
+  }
+
+  img {
+    width: 60px;
+    margin: 20px auto;
+    display: block;
+  }
+}
 </style>

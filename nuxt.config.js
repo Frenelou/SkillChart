@@ -41,6 +41,8 @@ export default {
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
+    '@nuxt/image',
+    '@nuxt/http'
   ],
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
@@ -48,4 +50,8 @@ export default {
     standalone: true,
   },
 
+  image: {
+    domains: ['https://pixelford.com']
+
+  }
 }
