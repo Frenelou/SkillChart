@@ -11,7 +11,9 @@ import * as d3 from "d3";
 export default {
   data() {
     return {
+      svg: null,
       skillTree: null,
+      d3: null,
       skills: [
         { id: "skills", label: 'Skill Tree' },
         { parentId: "skills", id: "languages", label: 'Languages', },
@@ -94,7 +96,8 @@ export default {
     }
   },
   mounted() {
-    this.skillTree = d3.select('svg');
+
+    this.skillTree = d3.select('svg g');
     let root = d3.hierarchy(this.makeGroups(this.skills));
 
     var treeLayout = d3.tree();
@@ -104,8 +107,14 @@ export default {
     this.drawLinks(root.links());
     this.drawNodes(root.descendants());
 
+    this.zoomAndPan();
+
   },
   methods: {
+    handleZoom(e) {
+      d3.select('svg')
+        .attr('transform', e.transform);
+    },
     makeGroups(data) {
       return d3.stratify()
         .id(function (d) { return d.id; })
@@ -131,7 +140,7 @@ export default {
         .attr('width', rectWidth)
         .attr('height', rectWidth)
         .attr('x', function (d, i) {
-          return -rectWidth / 2 + 10;
+          return -rectWidth / 2;
         })
         .append('xhtml:div')
         .html(function (d) {
@@ -139,15 +148,16 @@ export default {
           const img = getIcon(label)
           return `
             <div class="skill">
-              <div class="skill-content">
-                <label>
-                  ${label}
-                </label>
-                ${skillLevel ? `<img src="${img}" alt="${label}">` : ''}
+              <div class="skill-content ${skillLevel ? 'has-icon' :
+              ''}">
+        <label>
+        ${label}
+                </label >
+          ${skillLevel ? `<img src="/${img}" alt="${label}">` : ''}
               </div>
             </div>
-          `;
-        });
+  `;
+        })
 
     },
     drawLinks(links) {
@@ -173,15 +183,44 @@ export default {
 
       return http.status != 404 ? src : 'icons/default.png';
     },
-    sumWorldwideGross(group) {
-      return d3.sum(group, function (d) {
-        return d.Worldwide_Gross;
-      });
+
+    zoomAndPan() {
+      let width = 1000;
+      let height = 1000;
+
+      const svg = d3.select('svg')
+        .attr("viewBox", [0, 0, width, height]);
+      const g = d3.select('svg g');
+      g.attr("cursor", "grab");
+
+      g.call(d3.drag()
+        .on("start", dragstarted)
+        .on("drag", dragged)
+        .on("end", dragended));
+
+      svg.call(d3.zoom()
+        .extent([[0, 0], [width, height]])
+        .scaleExtent([1, 8])
+        .on("zoom", zoomed));
+
+      function dragstarted() {
+        d3.select(this).raise();
+        svg.attr("cursor", "grabbing");
+      }
+
+      function dragged(event, d) {
+        d3.select(this).attr("cx", d.x = event.x).attr("cy", d.y = event.y);
+      }
+
+      function dragended() {
+        svg.attr("cursor", "grab");
+      }
+      function zoomed({ transform }) {
+        g.attr("transform", transform);
+      }
     }
-  },
-  plugins: [
-    { src: '~node_modules/d3/dist/d3.js', ssr: false }
-  ]
+
+  }
 }
 </script>
 	
@@ -191,6 +230,12 @@ export default {
   font-size: 14px;
 
   &-content {
+    &.has-icon {
+
+      height: 80px;
+      width: 80px;
+    }
+
     border: 2px solid #000;
     border-radius: 5px;
     text-align: center;
@@ -200,7 +245,7 @@ export default {
 
   img {
     width: 60px;
-    margin: 20px auto;
+    margin: auto;
     display: block;
   }
 }
