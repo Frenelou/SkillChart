@@ -1,13 +1,13 @@
 <template>
   <div>
-    <tree/>
+    <Chart />
   </div>
 </template>
 
 <script>
 
 export default {
-    name: "IndexPage",
+  name: "IndexPage",
 }
 </script>
 

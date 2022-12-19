@@ -1,0 +1,255 @@
+{
+    "name": "Skills",
+    "rootSkill": true,
+    "children": [
+        {
+            "name": "Programming",
+            "label": "programming",
+            "techType": "programming",
+            "rootSkill": true,
+            "children": [
+                {
+                    "name": "Cloud",
+                    "label": "cloud",
+                    "children": [
+                        {
+                            "name": "AWS",
+                            "label": "aws",
+                            "icon": "aws"
+                        },
+                        {
+                            "name": "Azure",
+                            "label": "azure",
+                            "icon": "azure"
+                        },
+                        {
+                            "name": "Google Cloud",
+                            "label": "google-cloud",
+                            "icon": "google-cloud"
+                        },
+                        {
+                            "name": "DevOps",
+                            "label": "devops"
+                        }
+                    ]
+                },
+                {
+                    "name": "Python",
+                    "label": "python",
+                    "icon": "python",
+                    "children": [
+                        {
+                            "name": "Django",
+                            "label": "django",
+                            "icon": "django"
+                        },
+                        {
+                            "name": "Flask",
+                            "label": "flask",
+                            "icon": "flask"
+                        },
+                        {
+                            "name": "Pandas",
+                            "label": "pandas"
+                        },
+                        {
+                            "name": "NumPy",
+                            "label": "numpy"
+                        }
+                    ]
+                },
+                {
+                    "name": "JavaScript",
+                    "label": "javascript",
+                    "icon": "javascript",
+                    "techType": "javascript",
+                    "children": [
+                        {
+                            "name": "Node.js",
+                            "label": "nodejs"
+                        },
+                        {
+                            "name": "AngularJS",
+                            "label": "angularjs",
+                            "icon": "angularjs"
+                        },
+                        {
+                            "name": "React",
+                            "label": "react",
+                            "icon": "react",
+                            "children": [
+                                {
+                                    "name": "Redux",
+                                    "label": "redux"
+                                },
+                                {
+                                    "name": "React Router",
+                                    "label": "react-router"
+                                },
+                                {
+                                    "name": "React Native",
+                                    "label": "react-native"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "jQuery",
+                            "label": "jquery",
+                            "icon": "jquery"
+                        },
+                        {
+                            "name": "D3.js",
+                            "label": "d3js",
+                            "icon": "d3js"
+                        },
+                        {
+                            "name": "Backbone.js",
+                            "label": "backbonejs"
+                        },
+                        {
+                            "name": "Underscore.js",
+                            "label": "underscorejs"
+                        },
+                        {
+                            "name": "Ember.js",
+                            "label": "emberjs"
+                        },
+                        {
+                            "name": "Vue.js",
+                            "label": "vuejs",
+                            "icon": "vuejs",
+                            "children": [
+                                {
+                                    "name": "Vuex",
+                                    "label": "vuex"
+                                },
+                                {
+                                    "name": "Vue Router",
+                                    "label": "vue-router"
+                                },
+                                {
+                                    "name": "Vue CLI",
+                                    "label": "vue-cli"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "HTML",
+                    "label": "html",
+                    "icon": "html"
+                },
+                {
+                    "name": "CSS",
+                    "label": "css",
+                    "techType": "css",
+                    "children": [
+                        {
+                            "name": "Sass",
+                            "label": "sass",
+                            "icon": "sass"
+                        },
+                        {
+                            "name": "Less",
+                            "label": "less"
+                        },
+                        {
+                            "name": "Bootstrap",
+                            "label": "bootstrap",
+                            "icon": "bootstrap"
+                        },
+                        {
+                            "name": "Foundation",
+                            "label": "foundation"
+                        }
+                    ]
+                },
+                {
+                    "name": "Databases",
+                    "label": "databases",
+                    "techType": "databases",
+                    "children": [
+                        {
+                            "name": "MySQL",
+                            "label": "mysql",
+                            "icon": "mysql"
+                        },
+                        {
+                            "name": "MongoDB",
+                            "label": "mongodb",
+                            "icon": "mongodb"
+                        },
+                        {
+                            "name": "PostgreSQL",
+                            "label": "postgresql"
+                        },
+                        {
+                            "name": "Redis",
+                            "label": "redis"
+                        },
+                        {
+                            "name": "SQLite",
+                            "label": "sqlite"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Design",
+            "label": "design",
+            "techType": "design",
+            "rootSkill": true,
+            "children": [
+                {
+                    "name": "Adobe Suite",
+                    "label": "adobe-suite",
+                    "children": [
+                        {
+                            "name": "Photoshop",
+                            "label": "photoshop",
+                            "icon": "photoshop"
+                        },
+                        {
+                            "name": "Illustrator",
+                            "label": "illustrator",
+                            "icon": "illustrator"
+                        },
+                        {
+                            "name": "InDesign",
+                            "label": "indesign",
+                            "icon": "indesign"
+                        },
+                        {
+                            "name": "After Effects",
+                            "label": "after-effects",
+                            "icon": "after-effects"
+                        },
+                        {
+                            "name": "Premiere Pro",
+                            "label": "premiere-pro"
+                        }
+                    ]
+                },
+                {
+                    "name": "Sketch",
+                    "label": "sketch"
+                },
+                {
+                    "name": "Figma",
+                    "label": "figma",
+                    "icon": "figma"
+                },
+                {
+                    "name": "InVision",
+                    "label": "invision"
+                },
+                {
+                    "name": "Zeplin",
+                    "label": "zeplin"
+                }
+            ]
+        }
+    ]
+}
