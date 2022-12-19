@@ -1,0 +1,60 @@
+[
+  {
+    "name": "Jean Dupont",
+    "id": 1,
+    "people": true,
+    "title": "designer",
+    "skills": [
+      "photoshop",
+      "illustrator",
+      "indesign"
+    ]
+  },
+  {
+    "name": "Mounia Sefir",
+    "id": 2,
+    "people": true,
+    "title": "developer",
+    "skills": [
+      "html",
+      "css",
+      "javascript"
+    ]
+  },
+  {
+    "name": "Cho Chen",
+    "id": 3,
+    "people": true,
+    "title": "developer",
+    "skills": [
+      "python",
+      "django",
+      "javascript"
+    ]
+  },
+  {
+    "name": "Samira Benmoussa",
+    "id": 4,
+    "people": true,
+    "title": "developer",
+    "skills": [
+      "css",
+      "bootstrap",
+      "mysql",
+      "javascript"
+    ]
+  },
+  {
+    "name": "Alice Levent",
+    "id": 5,
+    "people": true,
+    "title": "designer",
+    "skills": [
+      "photoshop",
+      "figma",
+      "after-effects",
+      "indesign",
+      "mongodb"
+    ]
+  }
+]

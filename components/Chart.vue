@@ -11,7 +11,8 @@ export default {
   name: "Chart",
   data() {
     return {
-      data: [],
+      data: this.getData(),
+      people: [],
       colors: {
         "design": "#e76f51",
         "programming": "#2a9d8f",
@@ -19,19 +20,14 @@ export default {
         "framework": "#2a9d8f",
         "css": "#F16896",
         "databases": "#264653",
+        "adobe-suite": "#e63946",
       },
     };
   },
-  mounted() {
-    // get data data using getData method and wait for it to resolve
-    this.getData("/data/skills.json")
-      .then((result) => this.data = result);
-  },
   watch: {
     data: function (newVal, oldVal) {
-      console.log("newVal: ", newVal);
       this.drawChart(newVal);
-    },
+    }
   },
   methods: {
     drawChart: function (data) {
@@ -146,8 +142,6 @@ export default {
         .attr("text-anchor", (d) =>
           d.x < Math.PI === !d.children ? "start" : "end"
         );
-
-      // .attr("transform", (d) => (d.x >= Math.PI ? "rotate(180)" : null));
     },
 
     createNode: function (nodes, radius = 20) {
@@ -157,19 +151,8 @@ export default {
         .attr("class", (d) => `node--wrapper`)
         .attr('data-techType', (d) => d.data.techType);
 
-      // node.each((d) => {
-      //   if (d.data.techType) {
-      //     console.log(d.data.label, d.data.techType);
-      //     const current = document.querySelector(`#${d.data.label}_wrapper`)
-      //     console.log(current);
-      //   }
-      //   // const closest = document.querySelector(`#${d.data.label}_wrapper`).closest('[class^="node--wrapper"]');
-      //   // node.attr('data-techType', d.data.techType || closest.dataset.techtype);
-      //   // console.log(d.data.label, closest.dataset.techtype, d.data);
-      // });
-
       this.addTextNodes(node);
-      this.addCircleNodes(node, radius);
+      this.addCircleNodes(node.filter(d => !d.people), radius);
       this.addImageNodes(node, radius);
 
       node.on("click", function (event, d) {
@@ -254,29 +237,31 @@ export default {
         .html((d) => `<img src="/icons/${d.data.icon}.png" alt="${d.data.label}">`);
     }
     ,
-    getData: function (path) {
-      const data = d3
-        .json(path)
-        .then((result) => {
-          addTechType(result);
-          console.log(result);
-          return result
-        })
-        .catch((err) => console.log("err: ", err));
+    getData() {
+      const people = this.$axios.$get(`/data/people.json`)
+      const skills = this.$axios.$get(`/data/skills.json`)
+        .then((result) => addTechType(result))
 
-      function addTechType(node) {
+      Promise.all([skills, people]).then((values) => this.data = addPeopleToNodes(...values));
 
-        if (node.children) {
-          node.children.forEach((child) => {
-            if (!child.techType && node.techType) {
-              child.techType = node.techType;
-            }
-            addTechType(child);
-          });
-        }
-      }
+      const addTechType = (node) => {
+        node.children?.forEach((child) => {
+          child.techType = child.techType || node.techType
+          addTechType(child);
+        });
+        return node
+      };
 
-      return data
+      const addPeopleToNodes = (node, people) => {
+        node.children = [
+          ...node.children || [],
+          ...people.filter((person) => person.skills.includes(node.label))];
+
+        node.children.filter((child) => !child.people)
+          .forEach((child) => addPeopleToNodes(child, people));
+        return node
+      };
+
     },
     getIcon(label) {
       const src = `icons/${label}.png`;
@@ -331,12 +316,3 @@ svg {
   margin: 10px;
 }
 </style>
-
-<!-- 
-.on("click", function (event, d) {
-    let altChildren = d.data.altChildren || [];
-    let children = d.data.children;
-    d.data.children = altChildren;
-    d.data.altChildren = children;
-    this.updateChart();
-  }); -->

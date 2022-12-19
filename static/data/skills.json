@@ -11,6 +11,7 @@
                 {
                     "name": "Cloud",
                     "label": "cloud",
+                    "rootSkill": true,
                     "children": [
                         {
                             "name": "AWS",
@@ -144,6 +145,7 @@
                     "name": "CSS",
                     "label": "css",
                     "techType": "css",
+                    "rootSkill": true,
                     "children": [
                         {
                             "name": "Sass",
@@ -169,6 +171,7 @@
                     "name": "Databases",
                     "label": "databases",
                     "techType": "databases",
+                    "rootSkill": true,
                     "children": [
                         {
                             "name": "MySQL",
@@ -205,6 +208,8 @@
                 {
                     "name": "Adobe Suite",
                     "label": "adobe-suite",
+                    "techType": "adobe-suite",
+                    "rootSkill": true,
                     "children": [
                         {
                             "name": "Photoshop",
