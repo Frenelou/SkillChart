@@ -18,6 +18,7 @@
     "skills": [
       "html",
       "css",
+      "django",
       "javascript"
     ]
   },
@@ -54,7 +55,9 @@
       "figma",
       "after-effects",
       "indesign",
-      "mongodb"
+      "mongodb",
+      "django",
+      "python"
     ]
   }
 ]

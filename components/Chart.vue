@@ -1,18 +1,18 @@
 <template>
-  <div>
-    <svg></svg>
-  </div>
+  <svg id="radial_chart"></svg>
 </template>
 
 <script>
 import * as d3 from "d3";
+import { selection } from "d3";
 
 export default {
   name: "Chart",
   data() {
     return {
-      data: this.getData(),
-      people: [],
+      width: 0,
+      height: 0,
+      svg: null,
       colors: {
         "design": "#e76f51",
         "programming": "#2a9d8f",
@@ -21,19 +21,40 @@ export default {
         "css": "#F16896",
         "databases": "#264653",
         "adobe-suite": "#e63946",
+        "other": "blue",
       },
+      data: this.getData(),
+      people: [],
+      selectedSkills: [],
+      peopleWithSkills: [],
     };
   },
   watch: {
     data: function (newVal, oldVal) {
       this.drawChart(newVal);
-    }
+    },
+    selectedSkills: {
+      handler: function (newVal, oldVal) {
+        console.log("selected skills changed", newVal);
+        this.peopleWithSkills = this.people.filter((person) => {
+          return newVal.every((skill) => person.skills.includes(skill));
+        });
+      },
+      deep: true,
+    },
   },
   methods: {
     drawChart: function (data) {
       const svg = document.querySelector("svg");
       const { width, height } = svg.getBoundingClientRect();
       const radius = width / 2;
+
+      this._data = {
+        ...this._data,
+        svg,
+        width,
+        height,
+      }
 
       this.tree = d3
         .tree()
@@ -45,6 +66,7 @@ export default {
 
       this.linkgroup = this.g
         .append("g")
+        .attr("class", "links")
         .attr("fill", "none")
         .attr("stroke", "#555")
         .attr("stroke-opacity", 0.4)
@@ -62,6 +84,7 @@ export default {
       const { svg, g, linkgroup, nodegroup, tree, updateChart, createNode } =
         this;
       let root = tree(d3.hierarchy(this.data));
+      this.root = root;
 
       let links_data = root.links();
       let links = linkgroup
@@ -153,23 +176,97 @@ export default {
 
       this.addTextNodes(node);
       this.addCircleNodes(node.filter(d => !d.people), radius);
+      this.addCircleNodes(node.filter(d => d.people), radius / 3);
       this.addImageNodes(node, radius);
 
-      node.on("click", function (event, d) {
+      this.addToggleNodes(node);
+      this.zoomViewToNode(node);
+    },
+    zoomViewToNode(node) {
+      const chart = document.querySelector(`#radial_chart`);
+      const { people } = this;
+      node.on("click", (event, d) => {
+        const { selectedSkills } = this;
+
+        // add or remove node label from this.selectedSkills
+        if (!selectedSkills.includes(d.data.label)) selectedSkills.push(d.data.label);
+        else selectedSkills.splice(selectedSkills.indexOf(d.data.label), 1);
+
+        event.currentTarget.classList.toggle('node--selected');
+        if (!event.altKey) {
+          chart.classList.toggle('chart--filtered');
+        } else {
+          document.addEventListener('keyup', (event) => {
+            chart.classList.add('chart--filtered')
+            document.removeEventListener('keyup', event)
+          });
+        }
+      });
+
+      const showPeople = (event, d) => {
+        const peopleWithSkills = people.filter(person =>
+          selectedSkills.every(skill => person.skills.includes(skill)))
+        console.log(selectedSkills, peopleWithSkills.map(p => ({ name: p.name, skills: p.skills })))
+
+        // generate cricles for each person in people with d3
+        // add to chart
+
+        const peopleGroup = this.g
+          .append("g")
+          .attr("class", "people-group")
+
+        const peopleData = peopleGroup
+          .selectAll("g")
+          .data(peopleWithSkills)
+          .enter()
+          .append("g")
+          .attr("class", "person")
+          .attr("transform", (d, i) => `translate(${i * 100}, 0)`)
+          .attr("data-name", (d) => d.name)
+
+        peopleData
+          .append("circle")
+          .attr("r", 20)
+          .attr("fill", "red")
+
+        // update peopleGroup when peopleWithSkills changes
+
+        peopleData
+          .append("text")
+          .text((d) => d.name)
+          .attr("x", 0)
+          .attr("y", 30)
+          .attr("text-anchor", "middle")
+
+      }
+
+      chart.addEventListener('click', (event) => {
+        if (event.currentTarget == event.target) {
+          document.querySelectorAll('.node--selected').forEach(node => node.classList.remove('node--selected'))
+          chart.classList.remove('chart--filtered')
+          this.selectedSkills.splice(0, this.selectedSkills.length)
+          // remove peopleGroup
+          d3.select('.people-group').remove()
+
+        }
+      })
+    },
+    addToggleNodes(node) {
+      node.filter((d) => d.data.rootSkill).on("click", (event, d) => {
         let altChildren = d.data.altChildren || [];
         let children = d.data.children;
         d.data.children = altChildren;
         d.data.altChildren = children;
-        updateChart();
-      })
+        this.updateChart();
+      });
     },
     addCircleNodes(node, radius) {
 
       node.filter((d) => !d.data.rootSkill)
         .append("path")
-        .attr("id", (d) => `${d.data.label}_path`)
+        .attr("id", (d) => `${d.data.label || d.data.name}_path`)
         .attr("fill", "white")
-        .attr("stroke", (d) => this.colors[d.data.techType])
+        .attr("stroke", (d) => this.colors[d.data.techType || 'other'])
 
         .attr(
           "d",
@@ -208,7 +305,7 @@ export default {
     },
     addImageNodes(node, radius) {
 
-      const imageNodes = node.filter((d) => !d.data.rootSkill);
+      const imageNodes = node.filter((d) => !d.data.rootSkill && !d.data.people);
       const img_radius = radius * 0.9;
 
       imageNodes.select("path").attr("stroke-width", 18)
@@ -242,7 +339,10 @@ export default {
       const skills = this.$axios.$get(`/data/skills.json`)
         .then((result) => addTechType(result))
 
-      Promise.all([skills, people]).then((values) => this.data = addPeopleToNodes(...values));
+      Promise.all([skills, people]).then((values) => {
+        this.people = values[1];
+        this.data = addPeopleToNodes(...values)
+      });
 
       const addTechType = (node) => {
         node.children?.forEach((child) => {
@@ -253,12 +353,11 @@ export default {
       };
 
       const addPeopleToNodes = (node, people) => {
-        node.children = [
-          ...node.children || [],
-          ...people.filter((person) => person.skills.includes(node.label))];
+        const node_people = people.filter((person) => person.skills.includes(node.label));
+        // if (node_people.length) node.people = node_people;
+        if (node_people.length) node.children = [...node.children || [], ...node_people];
 
-        node.children.filter((child) => !child.people)
-          .forEach((child) => addPeopleToNodes(child, people));
+        node.children?.forEach((child) => addPeopleToNodes(child, people));
         return node
       };
 
@@ -291,6 +390,14 @@ svg {
   height: calc(100vh - 20px);
   width: calc(100% - 20px);
   margin: 0 auto;
+
+  &.chart--filtered {
+
+    .links,
+    .node--wrapper:not(.node--selected) {
+      display: none;
+    }
+  }
 }
 
 .node {
