@@ -43,7 +43,9 @@ export default {
   modules: [
     '@nuxt/image',
     '@nuxt/http',
-    '@nuxtjs/axios'
+    '@nuxtjs/axios',
+    '@nuxtjs/composition-api/module',
+    '@pinia/nuxt',
   ],
   axios: {
     // proxy: true
