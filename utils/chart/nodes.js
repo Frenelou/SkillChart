@@ -54,7 +54,7 @@ export const imageNodes = (node, radius) => {
     .attr("y", -img_radius)
     .append("xhtml:div")
     .attr("class", "node")
-    .html((d) => `<img src="/icons/${d.data.icon}.png" alt="${d.data.label}">`);
+    .html((d) => `<img src="/${d.data.icon}.png" alt="${d.data.label}">`);
   return node
 }
 

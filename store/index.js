@@ -9,8 +9,8 @@ export const useChartStore = defineStore('chart', {
   }),
   actions: {
     fetchData() {
-      const people = axios.get(`/data/people.json`).then(res => res.data)
-      const skills = axios.get(`/data/skills.json`).then(res => res.data)
+      const people = axios.get(`/people.json`).then(res => res)
+      const skills = axios.get(`/skills.json`).then(res => res.data)
         .then((result) => addTechType(result))
 
       Promise.all([skills, people]).then((values) => {
