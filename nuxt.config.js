@@ -1,4 +1,9 @@
 export default {
+  target: 'static',
+  router: {
+    base: '/SkillChart/'
+  },
+
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     title: 'SkillChart',
@@ -37,6 +42,8 @@ export default {
   // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
   buildModules: [
     '@nuxtjs/style-resources',
+    '@nuxtjs/composition-api/module',
+    '@pinia/nuxt',
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
@@ -46,6 +53,17 @@ export default {
     '@nuxtjs/axios',
     '@nuxtjs/composition-api/module',
     '@pinia/nuxt',
+    [
+      '@pinia/nuxt',
+      {
+        autoImports: [
+          // automatically imports `defineStore`
+          'defineStore', // import { defineStore } from 'pinia'
+          // automatically imports `defineStore` as `definePiniaStore`
+          ['defineStore', 'definePiniaStore'], // import { defineStore as definePiniaStore } from 'pinia'
+        ],
+      },
+    ],
   ],
   axios: {
     // proxy: true
@@ -53,6 +71,7 @@ export default {
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
     standalone: true,
+
   },
 
   image: {
