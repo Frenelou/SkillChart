@@ -14,7 +14,62 @@
     "name": "Jean Dupont",
     "id": 1,
     "people": true,
+    "title": "developer",
+    "skills": [
+      "photoshop",
+      "illustrator",
+      "indesign"
+    ]
+  },
+  {
+    "name": "Jean Dupont",
+    "id": 1,
+    "people": true,
     "title": "designer",
+    "skills": [
+      "photoshop",
+      "illustrator",
+      "indesign"
+    ]
+  },
+  {
+    "name": "Jean Dupont",
+    "id": 1,
+    "people": true,
+    "title": "designer",
+    "skills": [
+      "photoshop",
+      "illustrator",
+      "indesign"
+    ]
+  },
+  {
+    "name": "Jean Dupont",
+    "id": 1,
+    "people": true,
+    "title": "designer",
+    "skills": [
+      "photoshop",
+      "illustrator",
+      "indesign"
+    ]
+  },
+  {
+    "name": "Jean Dupont",
+    "id": 1,
+    "people": true,
+    "title": "designer",
+    "skills": [
+      "photoshop",
+      "illustrator",
+      "indesign"
+    ]
+  },
+  {
+    "name": "Jean Dupont",
+    "id": 1,
+    "people": true,
+    "title": "developer",
     "skills": [
       "photoshop",
       "illustrator",
@@ -234,7 +289,7 @@
     "name": "Jean Dupont",
     "id": 1,
     "people": true,
-    "title": "designer",
+    "title": "developer",
     "skills": [
       "photoshop",
       "illustrator",
@@ -278,62 +333,7 @@
     "name": "Jean Dupont",
     "id": 1,
     "people": true,
-    "title": "designer",
-    "skills": [
-      "photoshop",
-      "illustrator",
-      "indesign"
-    ]
-  },
-  {
-    "name": "Jean Dupont",
-    "id": 1,
-    "people": true,
-    "title": "designer",
-    "skills": [
-      "photoshop",
-      "illustrator",
-      "indesign"
-    ]
-  },
-  {
-    "name": "Jean Dupont",
-    "id": 1,
-    "people": true,
-    "title": "designer",
-    "skills": [
-      "photoshop",
-      "illustrator",
-      "indesign"
-    ]
-  },
-  {
-    "name": "Jean Dupont",
-    "id": 1,
-    "people": true,
-    "title": "designer",
-    "skills": [
-      "photoshop",
-      "illustrator",
-      "indesign"
-    ]
-  },
-  {
-    "name": "Jean Dupont",
-    "id": 1,
-    "people": true,
-    "title": "designer",
-    "skills": [
-      "photoshop",
-      "illustrator",
-      "indesign"
-    ]
-  },
-  {
-    "name": "Jean Dupont",
-    "id": 1,
-    "people": true,
-    "title": "designer",
+    "title": "developer",
     "skills": [
       "photoshop",
       "illustrator",
