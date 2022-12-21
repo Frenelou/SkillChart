@@ -1,5 +1,4 @@
 export default {
-  target: 'static',
   router: {
     base: '/SkillChart/'
   },
