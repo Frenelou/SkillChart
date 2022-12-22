@@ -173,7 +173,6 @@ export default {
     },
     skillClickHandler: function (node) {
       node.on("click", (event, d) => {
-        console.log("skillClickHandler", event.shiftKey);
         const { selectedSkills } = this;
 
         // add or remove node label from this.selectedSkills
@@ -183,8 +182,9 @@ export default {
         // add or remove node--selected class
         event.currentTarget.classList.toggle('node--selected');
 
-        // Show people immediately unless altKey is pressed
-        if (!event.shiftKey) this.togglePeople()
+        // Show people immediately unless shiftKey is pressed
+        if (selectedSkills.length == 0) this.togglePeople(false)
+        else if (!event.shiftKey) this.togglePeople()
         else document.addEventListener('keyup', this.togglePeople);
       });
     },
