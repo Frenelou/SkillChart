@@ -158,6 +158,7 @@ export default {
       toggleNodes(rootSkillsNodes, this.updateChart);
     },
     togglePeople: function (show) {
+      document.removeEventListener('keyup', this.togglePeople)
       this.showPeople = show ? true : !this.showPeople;
 
       const chart = document.querySelector(`#radial_chart`);
@@ -171,8 +172,8 @@ export default {
       }
     },
     skillClickHandler: function (node) {
-      console.log("skillClickHandler", node);
       node.on("click", (event, d) => {
+        console.log("skillClickHandler", event.shiftKey);
         const { selectedSkills } = this;
 
         // add or remove node label from this.selectedSkills
@@ -184,12 +185,7 @@ export default {
 
         // Show people immediately unless altKey is pressed
         if (!event.shiftKey) this.togglePeople()
-        else {
-          document.addEventListener('keyup', (event) => {
-            this.togglePeople(true)
-            document.removeEventListener('keyup', event)
-          });
-        }
+        else document.addEventListener('keyup', this.togglePeople);
       });
     },
     zoom: function () {
@@ -259,6 +255,10 @@ g.person {
 .node {
   &--wrapper {
     cursor: pointer;
+  }
+
+  &--selected {
+    filter: drop-shadow(0 0 5px #000);
   }
 
   background-color: #fff;
