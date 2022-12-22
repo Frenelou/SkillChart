@@ -54,7 +54,6 @@ export default {
       this.tree = d3
         .tree()
         .size([2 * Math.PI, this.radius])
-        // .nodeSize([this.width / 100, this.width / 100])
         .separation((a, b) => (a.parent == b.parent ? 1 : 2) / a.depth);
 
       this.svg = d3.select("svg")

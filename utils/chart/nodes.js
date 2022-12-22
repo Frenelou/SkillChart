@@ -15,7 +15,7 @@ export const colors = {
 export const circleNodes = (node, radius, fill = "#fff", stroke = "none") =>
   node
     .append("path")
-    .attr("id", (d) => `${d.first_name + ' ' + d.last_name || d.data.label}_path`)
+    .attr("id", (d) => `${d.data?.label || d.first_name + ' ' + d.last_name}_path`)
     .attr("fill", fill)
     .attr("stroke", (d) => d.data ? colors[d.data.techType || 'other'] : stroke)
 
@@ -31,7 +31,7 @@ export const circleNodes = (node, radius, fill = "#fff", stroke = "none") =>
 
 export const imageNodes = (node, radius) => {
   const img_radius = radius * 0.9;
-  node.select("path").attr("stroke-width", 18)
+  node.select("path").attr("stroke-width", 20)
   node
     .append("text")
     .append("textPath") //append a textPath to the text element
@@ -91,7 +91,6 @@ export const toggleNodes = (node, cb) => {
     let children = d.data.children;
     d.data.children = altChildren;
     d.data.altChildren = children;
-    console.log(cb);
     return cb();
   });
 }
