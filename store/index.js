@@ -3,6 +3,8 @@ import axios from 'axios';
 
 import { countLowerLevelChildren } from '../utils'
 
+const dataPath = process.env.NODE_ENV === 'production' ? '/SkillChart/data/' : '/data/'
+
 export const useChartStore = defineStore('chart', {
   state: () => ({
     skills: {},
@@ -12,8 +14,8 @@ export const useChartStore = defineStore('chart', {
   }),
   actions: {
     fetchData() {
-      const people = axios.get(`/data/people.json`).then(res => res.data)
-      const skills = axios.get(`/data/skills.json`).then(res => res.data)
+      const people = axios.get(`${dataPath}/people.json`).then(res => res.data)
+      const skills = axios.get(`${dataPath}/skills.json`).then(res => res.data)
         .then((result) => addTechType(result))
 
       Promise.all([skills, people]).then((values) => {
