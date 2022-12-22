@@ -124,6 +124,8 @@ export const initTooltip = (nodes) => {
       .style("left", event.pageX + 10 + "px")
       .style("top", event.pageY - 25 + "px")
       .html(d.name || d.data.name))
+    .on("mouseout", (event, d) => tooltip.style("opacity", 0))
+
 }
 
 export const gridDiscCoords = (data, pointSize = 15) => {
