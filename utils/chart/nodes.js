@@ -54,7 +54,12 @@ export const imageNodes = (node, radius) => {
     .attr("y", -img_radius)
     .append("xhtml:div")
     .attr("class", "node")
-    .html((d) => `<img src="icons/${d.data.icon}.png" alt="${d.data.label}">`);
+    .html((d) => {
+      const { label, icon } = d.data
+      const angle = Math.ceil((d.x * 180) / Math.PI - 90) * -1;
+      return `<img src="icons/${icon}.png" alt="${label}" style="transform: rotate(${angle}deg)"/>`
+    });
+
   return node
 }
 

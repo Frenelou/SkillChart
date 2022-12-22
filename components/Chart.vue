@@ -277,6 +277,7 @@ g.person {
   object-fit: contain;
   border-radius: 50%;
   margin: 10px;
+  transform-box: view-box;
 }
 
 #tooltip {
