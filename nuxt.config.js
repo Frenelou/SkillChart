@@ -3,7 +3,9 @@ export default {
   router: {
     base: '/SkillChart/'
   },
-
+  static: {
+    prefix: false
+  },
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     title: 'SkillChart',
