@@ -1,5 +1,10 @@
 <template>
-  <Chart />
+  <div>
+    <Chart />
+    <Modal>
+      <Info />
+    </Modal>
+  </div>
 </template>
 
 <script>

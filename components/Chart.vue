@@ -19,7 +19,7 @@ export default {
   setup() {
     const store = useChartStore();
 
-    const { skills, people, selectedSkills, fetchData, getPeopleWithSkills, getLowerLevelChildrenCount } = storeToRefs(store)
+    const { skills, people, selectedSkills, fetchData, getPeopleWithSkills, getLowerLevelChildrenCount, toggleModal, setCurrentUserId } = storeToRefs(store)
 
     return {
       skills,
@@ -32,6 +32,8 @@ export default {
       radius: 0,
       svg: null,
       showPeople: false,
+      toggleModal,
+      setCurrentUserId,
       fetchData,
       colors,
     }
@@ -164,7 +166,7 @@ export default {
       const chart = document.querySelector(`#radial_chart`);
       chart.classList.toggle('chart--filtered', this.showPeople);
 
-      if (this.showPeople) peopleNodes(this.peopleWithSkills, this.g)
+      if (this.showPeople) peopleNodes(this.peopleWithSkills, this.g, this.toggleModal)
       else {
         this.selectedSkills = [];
         d3.select('#people-group').remove()
@@ -194,6 +196,10 @@ export default {
           this.g.attr("transform", event.transform);
         })
       );
+    },
+    showPersonInfo: function (id) {
+      this.setCurrentUserId(id);
+      this.toggleModal();
     },
   },
   mounted() {

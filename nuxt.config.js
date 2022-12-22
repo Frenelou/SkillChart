@@ -46,6 +46,7 @@ export default {
     '@nuxtjs/style-resources',
     '@nuxtjs/composition-api/module',
     '@pinia/nuxt',
+
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules

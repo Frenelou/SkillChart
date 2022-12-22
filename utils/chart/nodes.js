@@ -15,7 +15,7 @@ export const colors = {
 export const circleNodes = (node, radius, fill = "#fff", stroke = "none") =>
   node
     .append("path")
-    .attr("id", (d) => `${d.name || d.data.label}_path`)
+    .attr("id", (d) => `${d.first_name + ' ' + d.last_name || d.data.label}_path`)
     .attr("fill", fill)
     .attr("stroke", (d) => d.data ? colors[d.data.techType || 'other'] : stroke)
 
@@ -96,7 +96,7 @@ export const toggleNodes = (node, cb) => {
   });
 }
 
-export const peopleNodes = (node, g) => {
+export const peopleNodes = (node, g, cb) => {
   const peopleWidth = 15
 
   const peopleGroup = document.querySelector('#people-group') ? d3.select('#people-group') : g
@@ -115,10 +115,10 @@ export const peopleNodes = (node, g) => {
 
   circleNodes(people, peopleWidth)
     .attr("fill", (d) => colors[d.title] || 'other')
-    .attr("data-name", d => d.name)
+    .attr("data-name", d => d.first_name + '-' + d.last_name)
 
   initTooltip(people)
-  displayPeopleInfo(people)
+  displayPeopleInfo(people, cb)
 }
 
 export const initTooltip = (nodes) => {
@@ -128,7 +128,7 @@ export const initTooltip = (nodes) => {
       .style("opacity", 1)
       .style("left", event.pageX + 10 + "px")
       .style("top", event.pageY - 25 + "px")
-      .html(d.name || d.data.name))
+      .html(d.data ? d.data.name : d.first_name + ' ' + d.last_name))
     .on("mouseout", (event, d) => tooltip.style("opacity", 0))
 
 }
@@ -152,8 +152,10 @@ export const gridDiscCoords = (data, pointSize = 15) => {
   return coords
 }
 
-export const displayPeopleInfo = (data) => {
+export const displayPeopleInfo = (data, cb) => {
   data.on("click", (event, d) => {
-    console.log(`Show ${d.name}'s profile`);
+    const name = d.first_name + ' ' + d.last_name
+    console.log(`Show ${name}'s profile`);
+    return cb(d.id)
   })
 }

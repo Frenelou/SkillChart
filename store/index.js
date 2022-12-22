@@ -11,6 +11,8 @@ export const useChartStore = defineStore('chart', {
     people: [],
     selectedSkills: [],
     lowerLevelChildrenCount: 0,
+    currentUserId: 1,
+    modalActive: false,
   }),
   actions: {
     fetchData() {
@@ -31,15 +33,21 @@ export const useChartStore = defineStore('chart', {
         return node
       };
     },
-    setSkills(state, skills) {
-      state.skills = skills
+    setSkills(skills) {
+      this.skills = skills
     },
-    setSelectedSkills(state, skills) {
+    setSelectedSkills(skills) {
       console.log('setSelectedSkills', skills);
-      state.selectedSkills = skills
+      this.selectedSkills = skills
     },
-    setPeople(state, people) {
-      state.people = people
+    setPeople(people) {
+      this.people = people
+    },
+    toggleModal() {
+      this.modalActive = !this.modalActive
+    },
+    setCurrentUserId(id) {
+      this.currentUserId = id
     }
   },
   getters: {
@@ -47,9 +55,10 @@ export const useChartStore = defineStore('chart', {
       const { people, skills } = state
       if (!state.selectedSkills.length) return []
       else return people.filter(person =>
-        state.selectedSkills.every(skill => person.skills.includes(skill)))
+        state.selectedSkills.every(skill => person.skills.map(s => s.name).includes(skill)))
     },
-    getLowerLevelChildrenCount: state => countLowerLevelChildren(state.skills)
+    getLowerLevelChildrenCount: state => countLowerLevelChildren(state.skills),
+    getUserInfo: state => state.people ? state.people.find(person => person.id === state.currentUserId) : null,
 
   }
 })
