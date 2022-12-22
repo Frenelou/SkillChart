@@ -166,7 +166,7 @@ export default {
       const chart = document.querySelector(`#radial_chart`);
       chart.classList.toggle('chart--filtered', this.showPeople);
 
-      if (this.showPeople) peopleNodes(this.peopleWithSkills, this.g, this.toggleModal)
+      if (this.showPeople) peopleNodes(this.peopleWithSkills, this.g, this.showPersonInfo)
       else {
         this.selectedSkills = [];
         d3.select('#people-group').remove()

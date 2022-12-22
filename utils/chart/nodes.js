@@ -152,10 +152,4 @@ export const gridDiscCoords = (data, pointSize = 15) => {
   return coords
 }
 
-export const displayPeopleInfo = (data, cb) => {
-  data.on("click", (event, d) => {
-    const name = d.first_name + ' ' + d.last_name
-    console.log(`Show ${name}'s profile`);
-    return cb(d.id)
-  })
-}
+export const displayPeopleInfo = (data, cb) => data.on("click", (event, d) => cb(d.id))
