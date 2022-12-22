@@ -1,15 +1,18 @@
 import { defineStore } from 'pinia'
 import axios from 'axios';
 
+import { countLowerLevelChildren } from '../utils'
+
 export const useChartStore = defineStore('chart', {
   state: () => ({
     skills: {},
     people: [],
-    selectedSkills: []
+    selectedSkills: [],
+    lowerLevelChildrenCount: 0,
   }),
   actions: {
     fetchData() {
-      const people = axios.get(`/data/people.json`).then(res => res)
+      const people = axios.get(`/data/people.json`).then(res => res.data)
       const skills = axios.get(`/data/skills.json`).then(res => res.data)
         .then((result) => addTechType(result))
 
@@ -43,6 +46,8 @@ export const useChartStore = defineStore('chart', {
       if (!state.selectedSkills.length) return []
       else return people.filter(person =>
         state.selectedSkills.every(skill => person.skills.includes(skill)))
-    }
+    },
+    getLowerLevelChildrenCount: state => countLowerLevelChildren(state.skills)
+
   }
 })

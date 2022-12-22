@@ -1,5 +1,10 @@
 <template>
-  <svg id="radial_chart"></svg>
+  <div>
+    <div id="chart-container">
+      <svg id="radial_chart"></svg>
+    </div>
+    <div id="tooltip"></div>
+  </div>
 </template>
 
 <script>
@@ -8,34 +13,27 @@ import { useChartStore } from "~/store/";
 import { storeToRefs } from 'pinia'
 
 import * as d3 from "d3";
-import { circleNodes, imageNodes, textNodes, toggleNodes, peopleNodes } from "../utils/chart/nodes";
+import { circleNodes, imageNodes, textNodes, toggleNodes, peopleNodes, colors, initTooltip } from "../utils/chart/nodes";
 
 export default {
   setup() {
     const store = useChartStore();
 
-    const { skills, people, selectedSkills, fetchData, getPeopleWithSkills } = storeToRefs(store)
+    const { skills, people, selectedSkills, fetchData, getPeopleWithSkills, getLowerLevelChildrenCount } = storeToRefs(store)
 
     return {
       skills,
       people,
       selectedSkills,
       peopleWithSkills: computed(() => getPeopleWithSkills.value),
+      lowerLevelChildrenCount: computed(() => getLowerLevelChildrenCount.value),
       width: 0,
       height: 0,
+      radius: 0,
       svg: null,
       showPeople: false,
       fetchData,
-      colors: {
-        "design": "#e76f51",
-        "programming": "#2a9d8f",
-        "javascript": "#ffb703",
-        "framework": "#2a9d8f",
-        "css": "#F16896",
-        "databases": "#264653",
-        "adobe-suite": "#e63946",
-        "other": "blue",
-      },
+      colors,
     }
   },
 
@@ -54,6 +52,7 @@ export default {
       this.tree = d3
         .tree()
         .size([2 * Math.PI, this.radius])
+        // .nodeSize([this.width / 100, this.width / 100])
         .separation((a, b) => (a.parent == b.parent ? 1 : 2) / a.depth);
 
       this.svg = d3.select("svg")
@@ -142,14 +141,17 @@ export default {
 
     },
 
-    createNodes: function (nodes, radius = 20) {
+    createNodes: function (nodes) {
+      const { radius, lowerLevelChildrenCount, height } = this;
       let node = nodes
-        .attr('id', (d) => `${d.data.label}_wrapper`)
+        .attr('id', (d) => `${d.data.label}`)
+        .attr("data-name", (d) => d.data.name)
         .attr("class", (d) => `node--wrapper`)
 
       const skillsNodes = node.filter(d => !d.people && !d.data.rootSkill);
-      circleNodes(skillsNodes, radius);
-      imageNodes(skillsNodes, radius);
+      circleNodes(skillsNodes, 40);
+      imageNodes(skillsNodes, 40);
+      initTooltip(skillsNodes);
       this.skillClickHandler(skillsNodes);
 
       const rootSkillsNodes = textNodes(node.filter((d) => d.data.rootSkill));
@@ -191,7 +193,7 @@ export default {
       });
     },
     zoom: function () {
-      this.svg.call(d3.zoom().scaleExtent([0.1, 10])
+      this.svg.call(d3.zoom().scaleExtent([.1, 10])
         .on("zoom", (event) => {
           this.g.attr("transform", event.transform);
         })
@@ -209,9 +211,27 @@ export default {
 </script>
 
 <style lang="scss">
+body {
+  font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+  color: #333;
+}
+
+#chart-container {
+  height: 95vh;
+  width: 95vw;
+  overflow: hidden;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 svg {
-  height: calc(100vh - 20px);
-  width: calc(100% - 20px);
+  height: 100%;
+  width: 100%;
+  min-width: 1000px;
+  min-height: 800px;
   margin: 0 auto;
 
   &.chart--filtered {
@@ -257,5 +277,17 @@ g.person {
   object-fit: contain;
   border-radius: 50%;
   margin: 10px;
+}
+
+#tooltip {
+  position: absolute;
+  background-color: #fff;
+  border: 1px solid #000;
+  padding: 5px;
+  border-radius: 5px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+  pointer-events: none;
 }
 </style>
