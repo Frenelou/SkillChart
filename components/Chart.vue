@@ -4,6 +4,7 @@
       <svg id="radial_chart"></svg>
     </div>
     <div id="tooltip"></div>
+    <People/>
   </div>
 </template>
 
@@ -165,27 +166,27 @@ export default {
       const chart = document.querySelector(`#radial_chart`);
       chart.classList.toggle('chart--filtered', this.showPeople);
 
-      if (this.showPeople) peopleNodes(this.peopleWithSkills, this.g, this.showPersonInfo)
-      else {
-        this.selectedSkills = [];
-        d3.select('#people-group').remove()
-        document.querySelectorAll('.node--selected').forEach(node => node.classList.remove('node--selected'))
-      }
+      if(!show) this.selectedSkills = [];
+      console.log(this.selectedSkills)
+      document.querySelectorAll('.node--selected').forEach(node => node.classList.toggle('node--selected', this.selectedSkills.includes(node.getAttribute('id'))))
     },
     skillClickHandler: function (node) {
       node.on("click", (event, d) => {
+        event.stopPropagation();
         const { selectedSkills } = this;
+
+        if (!event.shiftKey) selectedSkills.splice(0, selectedSkills.length);
 
         // add or remove node label from this.selectedSkills
         if (!selectedSkills.includes(d.data.label)) selectedSkills.push(d.data.label);
         else selectedSkills.splice(selectedSkills.indexOf(d.data.label), 1);
 
         // add or remove node--selected class
-        event.currentTarget.classList.toggle('node--selected');
+        event.currentTarget.classList.toggle('node--selected', selectedSkills.includes(d.data.label));
 
         // Show people immediately unless shiftKey is pressed
         if (selectedSkills.length == 0) this.togglePeople(false)
-        else if (!event.shiftKey) this.togglePeople()
+        else if (!event.shiftKey) this.togglePeople(selectedSkills.length)
         else document.addEventListener('keyup', this.togglePeople);
       });
     },
@@ -239,7 +240,7 @@ svg {
 
     .links,
     .node--wrapper:not(.node--selected) {
-      display: none;
+      filter:grayscale(1) opacity(0.5);
     }
   }
 }
