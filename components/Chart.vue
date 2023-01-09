@@ -207,15 +207,11 @@ export default {
 </script>
 
 <style lang="scss">
-body {
-  font-family: 'Roboto', sans-serif;
-  font-size: 16px;
-  color: #333;
-}
 
 #chart-container {
-  height: 95vh;
-  width: 95vw;
+  height: 100vh;
+  width: 100vw;
+  padding: 0;
   overflow: hidden;
   margin: 0;
   display: flex;
