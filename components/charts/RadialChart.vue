@@ -4,7 +4,7 @@
       <svg id="radial_chart"></svg>
     </div>
     <div id="tooltip"></div>
-    <PeopleWithSkillList/>
+    <PeopleWithSkillList />
   </div>
 </template>
 
@@ -164,7 +164,7 @@ export default {
       const chart = document.querySelector(`#radial_chart`);
       chart.classList.toggle('chart--filtered', this.showPeople);
 
-      if(!show) this.selectedSkills = [];
+      if (!show) this.selectedSkills = [];
       console.log(this.selectedSkills)
       document.querySelectorAll('.node--selected').forEach(node => node.classList.toggle('node--selected', this.selectedSkills.includes(node.getAttribute('id'))))
     },
@@ -207,7 +207,6 @@ export default {
 </script>
 
 <style lang="scss">
-
 #chart-container {
   height: 100vh;
   width: 100vw;
@@ -217,23 +216,22 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-}
 
-svg {
-  height: 100%;
-  width: 100%;
-  min-width: 1000px;
-  min-height: 800px;
-  margin: 0 auto;
+  svg {
+    height: 100%;
+    width: 100%;
+    min-width: 1000px;
+    min-height: 800px;
+    margin: 0 auto;
 
-  &.chart--filtered {
+    &.chart--filtered {
 
-    .links,
-    .node--wrapper:not(.node--selected) {
-      filter:grayscale(1) opacity(0.5);
+      .links,
+      .node--wrapper:not(.node--selected) {
+        filter: grayscale(1) opacity(0.5);
+      }
     }
   }
-}
 
 g.person {
   cursor: pointer;
@@ -286,5 +284,5 @@ g.person {
   opacity: 0;
   transition: opacity 0.2s ease-in-out;
   pointer-events: none;
-}
+}}
 </style>

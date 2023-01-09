@@ -1,6 +1,6 @@
 <template>
   <transition name="modal-animation">
-    <div class="modal-overlay" v-show="modalActive">
+    <div class="modal-overlay" v-show="modalActive" @click="toggleModal">
       <transition name="modal-animation-inner">
         <div class="modal-inner" v-show="modalActive">
           <div class="modal-header">
@@ -44,6 +44,7 @@ export default {
 
   &-body {
     padding: 10px;
+        overflow: auto;
   }
 
   &-footer {
@@ -69,12 +70,15 @@ export default {
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     width: 100%;
-    max-width: 1000px;
     height: 100%;
-    max-height: 500px;
-    overflow: auto;
+    max-width: 1100px;
+    max-height: 90vh;
+
     position: relative;
     z-index: 9999;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap:.5rem
   }
 
   &-close {
