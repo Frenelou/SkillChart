@@ -1,0 +1,157 @@
+<template>
+  <div>
+    <svg style="width:100%;height:100vh;" id="tree-chart">
+      <g />
+    </svg>
+  </div>
+</template>
+	
+<script>
+import { computed } from "vue";
+import { useChartStore } from "~/store/";
+import { storeToRefs } from 'pinia'
+import * as d3 from "d3";
+export default {
+  setup() {
+        const store = useChartStore();
+
+    const { skills, people, selectedSkills, fetchData, getPeopleWithSkills, getLowerLevelChildrenCount } = storeToRefs(store)
+
+    return {
+      svg: null,
+      g: null,
+      skillTree: null,
+      d3: null,
+      skills,
+
+      groups: null
+    }
+  },
+  mounted() {
+    this.svg = d3.select('svg#tree-chart');
+    this.skillTree = d3.select('svg#tree-chart g');
+    let root = d3.hierarchy(this.skills.children.find(s => s.label === 'programming'));
+    // let root = this.skills;
+
+    var treeLayout = d3.tree();
+    treeLayout.nodeSize([200, 200]);
+    
+    treeLayout(root);
+
+    this.drawLinks(root.links());
+    this.drawNodes(root.descendants());
+
+    this.zoom();
+
+  },
+  methods: {
+    handleZoom(e) {
+      this.svg
+        .attr('transform', e.transform);
+    },
+    makeGroups(data) {
+      return d3.stratify()
+        .id(function (d) { return d.id; })
+        .parentId(function (d) { return d.parentId; })
+        (data);
+    },
+    drawNodes(nodes) {
+      console.log("drawNodes", nodes);
+      const getIcon = this.getIcon;
+      const rectWidth = 120;
+
+      const node = this.skillTree.selectAll('g.node')
+        .data(nodes)
+        .enter()
+        .append('g')
+        .classed('node', true)
+        .attr('transform', function (d) {
+          return 'translate(' + d.x + ',' + d.y + ')';
+        });
+
+      // add html div to each node
+      node.append('foreignObject')
+        .attr('width', rectWidth)
+        .attr('height', rectWidth)
+        .attr('x', function (d, i) {
+          return -rectWidth / 2;
+        })
+        .append('xhtml:div')
+        .html(function (d) {
+          const { skillLevel=2, label } = d.data;
+          const img = getIcon(label)
+          return `
+            <div class="skill">
+              <div class="skill-content ${skillLevel ? 'has-icon' :
+              ''}">
+        <label>
+        ${label}
+                </label >
+          ${skillLevel ? `<img src="/${img}" alt="${label}">` : ''}
+              </div>
+            </div>
+  `;
+        })
+
+    },
+    drawLinks(links) {
+      console.log("drawLinks", links);
+      this.skillTree.selectAll('line.link')
+        .data(links)
+        .enter()
+        .append('line')
+        .classed('link', true)
+        .attr('x1', function (d) { return d.source.x; })
+        .attr('y1', function (d) { return d.source.y; })
+        .attr('x2', function (d) { return d.target.x; })
+        .attr('y2', function (d) { return d.target.y; })
+        .attr('stroke', 'black')
+        .attr('stroke-width', 1);
+    },
+    getIcon(label) {
+      const src = `icons/${label}.png`;
+      var http = new XMLHttpRequest();
+
+      http.open('HEAD', src, false);
+      http.send();
+
+      return http.status != 404 ? src : 'icons/default.png';
+    },
+zoom: function () {
+      this.svg.call(d3.zoom().scaleExtent([.1, 10])
+        .on("zoom", (event) => {
+          this.skillTree.attr("transform", event.transform);
+        })
+      );
+    }
+
+  }
+}
+</script>
+	
+<style lang="scss">
+.skill {
+  padding: 0 10px;
+  font-size: 14px;
+
+  &-content {
+    &.has-icon {
+
+      height: 80px;
+      width: 80px;
+    }
+
+    border: 2px solid #000;
+    border-radius: 5px;
+    text-align: center;
+    background-color: #fff;
+    padding: 0.5em;
+  }
+
+  img {
+    width: 60px;
+    margin: auto;
+    display: block;
+  }
+}
+</style>

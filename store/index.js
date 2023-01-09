@@ -12,7 +12,7 @@ export const useChartStore = defineStore('chart', {
     selectedSkills: [],
     lowerLevelChildrenCount: 0,
     currentUserId: 1,
-    modalActive: false,
+    modalActive: true,
   }),
   actions: {
     fetchData() {

@@ -6,6 +6,7 @@
       </h2>
     </template>
     <template v-slot:body>
+      <TreeChart/>
       <ul>
         <li v-for="({ name, level }, index) in userInfo.skills" :key="index">
           <span>{{ name }} {{ level }}</span>

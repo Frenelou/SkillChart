@@ -9,12 +9,12 @@
 </template>
 
 <script>
-import { watch, ref, computed, onMounted } from "vue";
+import { computed } from "vue";
 import { useChartStore } from "~/store/";
 import { storeToRefs } from 'pinia'
 
 import * as d3 from "d3";
-import { circleNodes, imageNodes, textNodes, toggleNodes, colors, initTooltip } from "../utils/chart/nodes";
+import { circleNodes, imageNodes, textNodes, toggleNodes, colors, initTooltip } from "../../utils/chart/nodes";
 
 export default {
   setup() {
