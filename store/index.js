@@ -40,9 +40,6 @@ export const useChartStore = defineStore('chart', {
       console.log('setSelectedSkills', skills);
       this.selectedSkills = skills
     },
-    setPeople(people) {
-      this.people = people
-    },
     toggleModal() {
       this.modalActive = !this.modalActive
     },

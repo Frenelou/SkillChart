@@ -4,7 +4,7 @@
       <svg id="radial_chart"></svg>
     </div>
     <div id="tooltip"></div>
-    <People/>
+    <PeopleWithSkillList/>
   </div>
 </template>
 
@@ -14,13 +14,13 @@ import { useChartStore } from "~/store/";
 import { storeToRefs } from 'pinia'
 
 import * as d3 from "d3";
-import { circleNodes, imageNodes, textNodes, toggleNodes, peopleNodes, colors, initTooltip } from "../utils/chart/nodes";
+import { circleNodes, imageNodes, textNodes, toggleNodes, colors, initTooltip } from "../utils/chart/nodes";
 
 export default {
   setup() {
     const store = useChartStore();
 
-    const { skills, people, selectedSkills, fetchData, getPeopleWithSkills, getLowerLevelChildrenCount, toggleModal, setCurrentUserId } = storeToRefs(store)
+    const { skills, people, selectedSkills, fetchData, getPeopleWithSkills, getLowerLevelChildrenCount } = storeToRefs(store)
 
     return {
       skills,
@@ -33,8 +33,6 @@ export default {
       radius: 0,
       svg: null,
       showPeople: false,
-      toggleModal,
-      setCurrentUserId,
       fetchData,
       colors,
     }
@@ -196,10 +194,6 @@ export default {
           this.g.attr("transform", event.transform);
         })
       );
-    },
-    showPersonInfo: function (id) {
-      this.setCurrentUserId(id);
-      this.toggleModal();
     },
   },
   mounted() {

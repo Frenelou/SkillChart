@@ -95,31 +95,6 @@ export const toggleNodes = (node, cb) => {
   });
 }
 
-export const peopleNodes = (node, g, cb) => {
-  const peopleWidth = 15
-
-  const peopleGroup = document.querySelector('#people-group') ? d3.select('#people-group') : g
-    .append("g")
-    .attr("id", "people-group")
-
-  const peopleCoords = gridDiscCoords(node, peopleWidth)
-
-  const people = peopleGroup
-    .selectAll("g")
-    .data(node)
-    .enter()
-    .append("g")
-    .attr("class", "person")
-    .attr("transform", (d, i) => `translate(${peopleCoords[i].x}, ${peopleCoords[i].y})`)
-
-  circleNodes(people, peopleWidth)
-    .attr("fill", (d) => colors[d.title] || 'other')
-    .attr("data-name", d => d.first_name + '-' + d.last_name)
-
-  initTooltip(people)
-  displayPeopleInfo(people, cb)
-}
-
 export const initTooltip = (nodes) => {
   const tooltip = d3.select("#tooltip")
   nodes
@@ -150,5 +125,3 @@ export const gridDiscCoords = (data, pointSize = 15) => {
   }
   return coords
 }
-
-export const displayPeopleInfo = (data, cb) => data.on("click", (event, d) => cb(d.id))

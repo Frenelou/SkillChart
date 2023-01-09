@@ -1,9 +1,7 @@
 <template>
   <div>
     <Chart />
-    <Modal>
-      <Info />
-    </Modal>
+    <Info/>
   </div>
 </template>
 

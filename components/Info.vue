@@ -1,19 +1,19 @@
 <template>
-  <div>
-    <div class="info" v-if="userInfo">
-      <div class="info__header">
-        <h2>{{ userInfo.first_name }} {{ userInfo.last_name }}</h2>
-        <h3>{{ userInfo.title }}</h3>
-      </div>
-      <div class="info__body">
-        <ul>
-          <li v-for="(skill, index) in userInfo.skills" :key="index">
-            <span>{{ skill }}</span>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </div>
+  <Modal v-if="userInfo">
+    <template v-slot:header>
+      <h2>{{ userInfo.first_name }} {{ userInfo.last_name }}
+        <span>{{ userInfo.title }}</span>
+      </h2>
+    </template>
+    <template v-slot:body>
+      <ul>
+        <li v-for="({ name, level }, index) in userInfo.skills" :key="index">
+          <span>{{ name }} {{ level }}</span>
+        </li>
+      </ul>
+    </template>
+  </Modal>
+
 </template>
 	
 <script>
@@ -26,12 +26,16 @@ export default {
     const store = useChartStore();
     const { getUserInfo } = storeToRefs(store)
     return {
-      userInfo: computed(() => getUserInfo.value)
+      userInfo: computed(() => getUserInfo?.value)
     }
   }
 }
 </script>
 	
 <style scoped>
-
+span {
+  display: block;
+  color: darkgrey;
+  font-size: 1.2rem;
+}
 </style>
