@@ -15,7 +15,7 @@ export const colors = {
 export const circleNodes = (node, radius, fill = "#fff", stroke = "none") =>
   node
     .append("path")
-    .attr("id", (d) => `${d.name || d.data.label}_path`)
+    .attr("id", (d) => `${d.data?.label || d.first_name + ' ' + d.last_name}_path`)
     .attr("fill", fill)
     .attr("stroke", (d) => d.data ? colors[d.data.techType || 'other'] : stroke)
 
@@ -31,7 +31,7 @@ export const circleNodes = (node, radius, fill = "#fff", stroke = "none") =>
 
 export const imageNodes = (node, radius) => {
   const img_radius = radius * 0.9;
-  node.select("path").attr("stroke-width", 18)
+  node.select("path").attr("stroke-width", 20)
   node
     .append("text")
     .append("textPath") //append a textPath to the text element
@@ -54,7 +54,12 @@ export const imageNodes = (node, radius) => {
     .attr("y", -img_radius)
     .append("xhtml:div")
     .attr("class", "node")
-    .html((d) => `<img src="/icons/${d.data.icon}.png" alt="${d.data.label}">`);
+    .html((d) => {
+      const { label, icon } = d.data
+      const angle = Math.ceil((d.x * 180) / Math.PI - 90) * -1;
+      return `<img src="icons/${icon}.png" alt="${label}" style="transform: rotate(${angle}deg)"/>`
+    });
+
   return node
 }
 
@@ -86,71 +91,37 @@ export const toggleNodes = (node, cb) => {
     let children = d.data.children;
     d.data.children = altChildren;
     d.data.altChildren = children;
-    console.log(cb);
     return cb();
   });
 }
 
-export const peopleNodes = (node, g) => {
-  const peopleWidth = 15
+export const initTooltip = (nodes) => {
+  const tooltip = d3.select("#tooltip")
+  nodes
+    .on("mouseover", (event, d) => tooltip
+      .style("opacity", 1)
+      .style("left", event.pageX + 10 + "px")
+      .style("top", event.pageY - 25 + "px")
+      .html(d.data ? d.data.name : d.first_name + ' ' + d.last_name))
+    .on("mouseout", (event, d) => tooltip.style("opacity", 0))
 
-  d3.select('#people-group')?.remove()
+}
 
-  const peopleGroup = g
-    .append("g")
-    .attr("id", "people-group")
-
-  const peopleData = peopleGroup
-    .selectAll("g")
-    .data(node)
-
-  const peopleCoords = [{ x: 0, y: 0 }]
-
-  var i = 0;
-  var radius = 0;
-  const stepBasis = peopleWidth * 2.5
-  while (i < node.length) {
-    var steps = Math.floor((2 * radius * Math.PI) / stepBasis);
-    for (var index = 0; index < steps; index++) {
+export const gridDiscCoords = (data, pointSize = 15) => {
+  let i = 0;
+  let radius = 0;
+  const coords = [{ x: 0, y: 0 }]
+  const stepBasis = pointSize * 2.5
+  while (i < data.length) {
+    let steps = Math.floor((2 * radius * Math.PI) / stepBasis);
+    for (let index = 0; index < steps; index++) {
       const [x, y] = ["cos", "sin"].map((fn) => Math.floor(0 + radius * Math[fn](2 * Math.PI * index / steps)))
-      peopleCoords.push({ x, y })
+      coords.push({ x, y })
       i++;
-      if (i == node)
+      if (i == data)
         break;
     }
     radius = radius + stepBasis;
   }
-
-  const people = peopleData
-    .enter()
-    .append("g")
-    .attr("class", "person")
-    .attr("transform", (d, i) => `translate(${peopleCoords[i].x}, ${peopleCoords[i].y})`)
-
-  circleNodes(people, peopleWidth)
-    .attr("fill", (d) => colors[d.title] || 'other')
-
-  people
-    .append("rect")
-    .attr("class", "person-label--bg")
-    .attr("x", d => -d.name.length * 1.5)
-    .attr("y", -10)
-    .attr("width", d => d.name.length * 4)
-    .attr("height", 20)
-    .attr("fill", "white")
-
-  people
-    .append("text")
-    .attr("class", "person-label")
-    .attr("x", 0)
-    .attr("y", 0)
-    .attr("text-anchor", "middle")
-    .attr("dominant-baseline", "middle")
-    .attr("font-size", "0.5rem")
-    .text(d => d.name)
-
-  people
-    .on("click", (event, d) => {
-      console.log(`Show ${d.name}'s profile`);
-    })
+  return coords
 }

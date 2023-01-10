@@ -1,16 +1,23 @@
 import { defineStore } from 'pinia'
 import axios from 'axios';
 
+import { countLowerLevelChildren } from '../utils'
+
+const dataPath = process.env.NODE_ENV === 'production' ? '/SkillChart/data/' : '/data/'
+
 export const useChartStore = defineStore('chart', {
   state: () => ({
     skills: {},
     people: [],
-    selectedSkills: []
+    selectedSkills: [],
+    lowerLevelChildrenCount: 0,
+    currentUserId: 1,
+    modalActive: false,
   }),
   actions: {
     fetchData() {
-      const people = axios.get(`/data/people.json`).then(res => res.data)
-      const skills = axios.get(`/data/skills.json`).then(res => res.data)
+      const people = axios.get(`${dataPath}/people.json`).then(res => res.data)
+      const skills = axios.get(`${dataPath}/skills.json`).then(res => res.data)
         .then((result) => addTechType(result))
 
       Promise.all([skills, people]).then((values) => {
@@ -26,15 +33,18 @@ export const useChartStore = defineStore('chart', {
         return node
       };
     },
-    setSkills(state, skills) {
-      state.skills = skills
+    setSkills(skills) {
+      this.skills = skills
     },
-    setSelectedSkills(state, skills) {
+    setSelectedSkills(skills) {
       console.log('setSelectedSkills', skills);
-      state.selectedSkills = skills
+      this.selectedSkills = skills
     },
-    setPeople(state, people) {
-      state.people = people
+    toggleModal() {
+      this.modalActive = !this.modalActive
+    },
+    setCurrentUserId(id) {
+      this.currentUserId = id
     }
   },
   getters: {
@@ -42,7 +52,10 @@ export const useChartStore = defineStore('chart', {
       const { people, skills } = state
       if (!state.selectedSkills.length) return []
       else return people.filter(person =>
-        state.selectedSkills.every(skill => person.skills.includes(skill)))
-    }
+        state.selectedSkills.every(skill => person.skills.map(s => s.name).includes(skill)))
+    },
+    getLowerLevelChildrenCount: state => countLowerLevelChildren(state.skills),
+    getUserInfo: state => state.people ? state.people.find(person => person.id === state.currentUserId) : null,
+
   }
 })

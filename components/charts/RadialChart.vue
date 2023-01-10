@@ -1,41 +1,40 @@
 <template>
-  <svg id="radial_chart"></svg>
+  <div>
+    <div id="chart-container">
+      <svg id="radial_chart"></svg>
+    </div>
+    <div id="tooltip"></div>
+    <PeopleWithSkillList />
+  </div>
 </template>
 
 <script>
-import { watch, ref, computed, onMounted } from "vue";
+import { computed } from "vue";
 import { useChartStore } from "~/store/";
 import { storeToRefs } from 'pinia'
 
 import * as d3 from "d3";
-import { circleNodes, imageNodes, textNodes, toggleNodes, peopleNodes } from "../utils/chart/nodes";
+import { circleNodes, imageNodes, textNodes, toggleNodes, colors, initTooltip } from "../../utils/chart/nodes";
 
 export default {
   setup() {
     const store = useChartStore();
 
-    const { skills, people, selectedSkills, fetchData, getPeopleWithSkills } = storeToRefs(store)
+    const { skills, people, selectedSkills, fetchData, getPeopleWithSkills, getLowerLevelChildrenCount } = storeToRefs(store)
 
     return {
       skills,
       people,
       selectedSkills,
       peopleWithSkills: computed(() => getPeopleWithSkills.value),
+      lowerLevelChildrenCount: computed(() => getLowerLevelChildrenCount.value),
       width: 0,
       height: 0,
+      radius: 0,
       svg: null,
       showPeople: false,
       fetchData,
-      colors: {
-        "design": "#e76f51",
-        "programming": "#2a9d8f",
-        "javascript": "#ffb703",
-        "framework": "#2a9d8f",
-        "css": "#F16896",
-        "databases": "#264653",
-        "adobe-suite": "#e63946",
-        "other": "blue",
-      },
+      colors,
     }
   },
 
@@ -142,56 +141,55 @@ export default {
 
     },
 
-    createNodes: function (nodes, radius = 20) {
+    createNodes: function (nodes) {
+      const { radius, lowerLevelChildrenCount, height } = this;
       let node = nodes
-        .attr('id', (d) => `${d.data.label}_wrapper`)
+        .attr('id', (d) => `${d.data.label}`)
+        .attr("data-name", (d) => d.data.name)
         .attr("class", (d) => `node--wrapper`)
 
       const skillsNodes = node.filter(d => !d.people && !d.data.rootSkill);
-      circleNodes(skillsNodes, radius);
-      imageNodes(skillsNodes, radius);
+      circleNodes(skillsNodes, 40);
+      imageNodes(skillsNodes, 40);
+      initTooltip(skillsNodes);
       this.skillClickHandler(skillsNodes);
 
       const rootSkillsNodes = textNodes(node.filter((d) => d.data.rootSkill));
       toggleNodes(rootSkillsNodes, this.updateChart);
     },
     togglePeople: function (show) {
+      document.removeEventListener('keyup', this.togglePeople)
       this.showPeople = show ? true : !this.showPeople;
 
       const chart = document.querySelector(`#radial_chart`);
       chart.classList.toggle('chart--filtered', this.showPeople);
 
-      if (this.showPeople) peopleNodes(this.peopleWithSkills, this.g)
-      else {
-        this.selectedSkills = [];
-        d3.select('#people-group').remove()
-        document.querySelectorAll('.node--selected').forEach(node => node.classList.remove('node--selected'))
-      }
+      if (!show) this.selectedSkills = [];
+      console.log(this.selectedSkills)
+      document.querySelectorAll('.node--selected').forEach(node => node.classList.toggle('node--selected', this.selectedSkills.includes(node.getAttribute('id'))))
     },
     skillClickHandler: function (node) {
-      console.log("skillClickHandler", node);
       node.on("click", (event, d) => {
+        event.stopPropagation();
         const { selectedSkills } = this;
+
+        if (!event.shiftKey) selectedSkills.splice(0, selectedSkills.length);
 
         // add or remove node label from this.selectedSkills
         if (!selectedSkills.includes(d.data.label)) selectedSkills.push(d.data.label);
         else selectedSkills.splice(selectedSkills.indexOf(d.data.label), 1);
 
         // add or remove node--selected class
-        event.currentTarget.classList.toggle('node--selected');
+        event.currentTarget.classList.toggle('node--selected', selectedSkills.includes(d.data.label));
 
-        // Show people immediately unless altKey is pressed
-        if (!event.shiftKey) this.togglePeople()
-        else {
-          document.addEventListener('keyup', (event) => {
-            this.togglePeople(true)
-            document.removeEventListener('keyup', event)
-          });
-        }
+        // Show people immediately unless shiftKey is pressed
+        if (selectedSkills.length == 0) this.togglePeople(false)
+        else if (!event.shiftKey) this.togglePeople(selectedSkills.length)
+        else document.addEventListener('keyup', this.togglePeople);
       });
     },
     zoom: function () {
-      this.svg.call(d3.zoom().scaleExtent([0.1, 10])
+      this.svg.call(d3.zoom().scaleExtent([.1, 10])
         .on("zoom", (event) => {
           this.g.attr("transform", event.transform);
         })
@@ -209,19 +207,31 @@ export default {
 </script>
 
 <style lang="scss">
-svg {
-  height: calc(100vh - 20px);
-  width: calc(100% - 20px);
-  margin: 0 auto;
+#chart-container {
+  height: 100vh;
+  width: 100vw;
+  padding: 0;
+  overflow: hidden;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-  &.chart--filtered {
+  svg {
+    height: 100%;
+    width: 100%;
+    min-width: 1000px;
+    min-height: 800px;
+    margin: 0 auto;
 
-    .links,
-    .node--wrapper:not(.node--selected) {
-      display: none;
+    &.chart--filtered {
+
+      .links,
+      .node--wrapper:not(.node--selected) {
+        filter: grayscale(1) opacity(0.5);
+      }
     }
   }
-}
 
 g.person {
   cursor: pointer;
@@ -241,6 +251,10 @@ g.person {
     cursor: pointer;
   }
 
+  &--selected {
+    filter: drop-shadow(0 0 5px #000);
+  }
+
   background-color: #fff;
   width: 100%;
   height: 100%;
@@ -257,5 +271,18 @@ g.person {
   object-fit: contain;
   border-radius: 50%;
   margin: 10px;
+  transform-box: view-box;
 }
+
+#tooltip {
+  position: absolute;
+  background-color: #fff;
+  border: 1px solid #000;
+  padding: 5px;
+  border-radius: 5px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+  pointer-events: none;
+}}
 </style>
