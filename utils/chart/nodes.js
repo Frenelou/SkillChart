@@ -16,7 +16,7 @@ export const circleNodes = (node, radius, fill = "#fff") =>
   node
     .append("path")
     .attr("fill", fill)
-    .attr("id", (d) => d.data?.label)
+    .attr("id", (d) => `${d.data?.label}_path`)
     .attr("stroke", (d) => colors[d.data?.techType || "other"])
 
     .attr(
